@@ -2,6 +2,8 @@
 
 Fixes TLS and stuff.
 
+Forked From github.com/x04/cclient
+
 # Example
 
 ```go
@@ -11,11 +13,11 @@ import (
     "log"
 
     "github.com/refraction-networking/utls"
-    "github.com/x04/cclient"
+    "github.com/danepoirier0/cclient"
 )
 
 func main() {
-    client, err := cclient.NewClient(tls.HelloChrome_Auto)
+    client, err := cclient.NewClient(tls.HelloChrome_Auto, os.Getenv("HTTP_PROXY"))
     if err != nil {
         log.Fatal(err)
     }

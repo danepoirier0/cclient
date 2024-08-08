@@ -1,10 +1,17 @@
-module github.com/x04/cclient
+module github.com/danepoirier0/cclient
 
-go 1.16
+go 1.22
 
 require (
-	github.com/refraction-networking/utls v0.0.0-20200806014556-219d12d0a4a1
-	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
-	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
-	golang.org/x/sys v0.0.0-20200602225109-6fdc65e7d980 // indirect
+	github.com/refraction-networking/utls v1.6.7
+	golang.org/x/net v0.28.0
+)
+
+require (
+	github.com/andybalholm/brotli v1.1.0 // indirect
+	github.com/cloudflare/circl v1.3.9 // indirect
+	github.com/klauspost/compress v1.17.9 // indirect
+	golang.org/x/crypto v0.26.0 // indirect
+	golang.org/x/sys v0.23.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
 )

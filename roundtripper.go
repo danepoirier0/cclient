@@ -21,7 +21,7 @@ var errProtocolNegotiated = errors.New("protocol negotiated")
 type roundTripper struct {
 	sync.Mutex
 
-	clientHelloId     utls.ClientHelloID
+	clientHelloId utls.ClientHelloID
 
 	cachedConnections map[string]net.Conn
 	cachedTransports  map[string]http.RoundTripper
@@ -98,7 +98,10 @@ func (rt *roundTripper) dialTLS(ctx context.Context, network, addr string) (net.
 	switch conn.ConnectionState().NegotiatedProtocol {
 	case http2.NextProtoTLS:
 		// The remote peer is speaking HTTP 2 + TLS.
-		rt.cachedTransports[addr] = &http2.Transport{DialTLS: rt.dialTLSHTTP2}
+		rt.cachedTransports[addr] = &http2.Transport{
+			DialTLS:           rt.dialTLSHTTP2,
+			MaxHeaderListSize: 1 << 20,
+		}
 	default:
 		// Assume the remote peer is speaking HTTP 1.x + TLS.
 		rt.cachedTransports[addr] = &http.Transport{DialTLSContext: rt.dialTLS}
