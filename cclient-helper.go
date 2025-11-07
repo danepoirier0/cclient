@@ -118,3 +118,96 @@ func (ch *CclientHelper) Post(reqUrl string, headers, cookies map[string]string,
 
 	return resp, nil
 }
+
+// 发送Put请求
+//
+// 如果返回不是错误，记得defer response.Body.Close()
+func (ch *CclientHelper) Put(reqUrl string, headers, cookies map[string]string, data map[string]interface{}) (*http.Response, error) {
+
+	if headers == nil {
+		headers = map[string]string{}
+	}
+	if cookies == nil {
+		cookies = map[string]string{}
+	}
+	if data == nil {
+		data = map[string]interface{}{}
+	}
+
+	// 1. 判断ContentType来使用不同方式构造请求数据
+	contentType := headers["Content-Type"]
+	bodyStr := ""
+	if strings.HasPrefix(contentType, "application/x-www-form-urlencoded") {
+		// 表单提交
+		for key, value := range data {
+			bodyStr += key + "=" + fmt.Sprintf("%v", value) + "&"
+		}
+
+	} else {
+		// 非表单提交的都认为是json提交
+		bodyBytes, err := json.Marshal(data)
+		if err != nil {
+			return nil, err
+		}
+		bodyStr = string(bodyBytes)
+	}
+
+	// 2. 构造PUT请求体, 并添加请求头和Cookies
+	putReq, err := http.NewRequest(http.MethodPut, reqUrl, strings.NewReader(bodyStr))
+	if err != nil {
+		return nil, err
+	}
+	for key, value := range headers {
+		putReq.Header.Add(key, value)
+	}
+	for k, v := range cookies {
+		putReq.AddCookie(&http.Cookie{
+			Name:  k,
+			Value: v,
+		})
+	}
+
+	// 3. 发送请求
+	resp, err := ch.client.Do(putReq)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// 发送Delete请求
+//
+// 如果返回不是错误，记得defer response.Body.Close()
+func (ch *CclientHelper) Delete(reqUrl string, headers, cookies map[string]string) (*http.Response, error) {
+	if headers == nil {
+		headers = map[string]string{}
+	}
+	if cookies == nil {
+		cookies = map[string]string{}
+	}
+
+	// 1.构造DELETE请求，拼接Headers和Cookies参数
+	deleteReq, err := http.NewRequest(http.MethodDelete, reqUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range headers {
+		deleteReq.Header.Add(k, v)
+	}
+	for k, v := range cookies {
+		deleteReq.AddCookie(&http.Cookie{
+			Name:  k,
+			Value: v,
+		})
+	}
+
+	// 2.发送请求
+	resp, err := ch.client.Do(deleteReq)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
